@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<drjava version="drjava-20130901-r5756">
+  <project autorefresh="false" build="bin/" main="src.reasonablecare.ReasonableCare" root="" work="src/">
+    <createjar file=""/>
+    <source>
+      <file active="true" name="src/reasonablecare/ReasonableCare.java" package="reasonablecare" timestamp="03-Apr-2014 10:56:49">
+        <select from="525" to="525"/>
+        <scroll column="0" row="0"/>
+      </file>
+    </source>
+    <included/>
+    <excluded/>
+    <collapsed/>
+    <classpath>
+      <file absolute="false" name="lib/ojdbc14.jar"/>
+    </classpath>
+    <breakpoints/>
+    <watches/>
+    <bookmarks/>
+    <preferences/>
+  </project>
+</drjava>
