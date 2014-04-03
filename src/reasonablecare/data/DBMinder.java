@@ -62,7 +62,7 @@ public class DBMinder
   /* close() closes the connection if it's still connected
    * not a whole lot to this guy
    */
-  private void close()
+  public void close()
   {
     if(conn != null)
     {

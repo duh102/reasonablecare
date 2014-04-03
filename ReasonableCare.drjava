@@ -3,12 +3,16 @@
   <project autorefresh="false" build="bin/" main="src.reasonablecare.ReasonableCare" root="" work="src/">
     <createjar file=""/>
     <source>
-      <file active="true" name="src/reasonablecare/ReasonableCare.java" package="reasonablecare" timestamp="03-Apr-2014 13:58:43">
-        <select from="63" to="63"/>
+      <file active="true" name="src/reasonablecare/data/User.java" package="reasonablecare.data" timestamp="03-Apr-2014 17:59:34">
+        <select from="833" to="833"/>
         <scroll column="0" row="0"/>
       </file>
-      <file name="src/reasonablecare/data/DBMinder.java" package="reasonablecare.data" timestamp="03-Apr-2014 13:54:04">
-        <select from="63" to="63"/>
+      <file name="src/reasonablecare/data/DBMinder.java" package="reasonablecare.data" timestamp="03-Apr-2014 17:21:06">
+        <select from="833" to="833"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="src/reasonablecare/ReasonableCare.java" package="reasonablecare" timestamp="03-Apr-2014 17:24:10">
+        <select from="833" to="833"/>
         <scroll column="0" row="0"/>
       </file>
     </source>
@@ -19,7 +23,9 @@
       <file absolute="false" name="lib/ojdbc14.jar"/>
     </classpath>
     <breakpoints/>
-    <watches/>
+    <watches>
+      <watch name="returnedID"/>
+    </watches>
     <bookmarks/>
     <preferences/>
   </project>
