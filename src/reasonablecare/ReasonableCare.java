@@ -25,15 +25,15 @@ public class ReasonableCare
     {
       case 0:
         System.out.printf("\nYou're attempting to log in as a student with UID [%d] and password '%s'\n", uid, pass);
-        loggedIn = User.logInUser(type, uid, pass);
+        loggedIn = User.logInUser(User.UserType.STUDENT, uid, pass);
         break;
       case 1:
         System.out.printf("\nYou're attempting to log in as a nurse with UID [%d] and password '%s'\n", uid, pass);
-        loggedIn = User.logInUser(type, uid, pass);
+        loggedIn = User.logInUser(User.UserType.NURSE, uid, pass);
         break;
       case 2:
         System.out.printf("\nYou're attempting to log in as a doctor with UID [%d] and password '%s'\n", uid, pass);
-        loggedIn = User.logInUser(type, uid, pass);
+        loggedIn = User.logInUser(User.UserType.DOCTOR, uid, pass);
         break;
       default:
         System.out.printf("\nYou're attempting to log in as a [%d] with UID [%d] and password '%s'\nYou can't do that, stop.\n", type, uid, pass);

@@ -3,25 +3,29 @@
   <project autorefresh="false" build="bin/" main="src.reasonablecare.ReasonableCare" root="" work="src/">
     <createjar file=""/>
     <source>
-      <file active="true" name="src/reasonablecare/data/User.java" package="reasonablecare.data" timestamp="08-Apr-2014 13:54:47">
-        <select from="1894" to="1894"/>
-        <scroll column="898" row="0"/>
+      <file active="true" name="src/reasonablecare/data/Specialization.java" package="reasonablecare.data" timestamp="08-Apr-2014 14:19:13">
+        <select from="2158" to="2158"/>
+        <scroll column="812" row="0"/>
       </file>
       <file name="src/reasonablecare/data/CreditCard.java" package="reasonablecare.data" timestamp="07-Apr-2014 12:18:46">
-        <select from="1894" to="1894"/>
-        <scroll column="898" row="0"/>
+        <select from="2158" to="2158"/>
+        <scroll column="812" row="0"/>
       </file>
       <file name="src/reasonablecare/data/DBMinder.java" package="reasonablecare.data" timestamp="03-Apr-2014 17:21:06">
-        <select from="1894" to="1894"/>
-        <scroll column="898" row="0"/>
-      </file>
-      <file name="src/reasonablecare/ReasonableCare.java" package="reasonablecare" timestamp="07-Apr-2014 23:59:30">
-        <select from="1894" to="1894"/>
-        <scroll column="898" row="0"/>
+        <select from="2158" to="2158"/>
+        <scroll column="812" row="0"/>
       </file>
       <file name="src/reasonablecare/data/Schedule.java" package="reasonablecare.data" timestamp="08-Apr-2014 13:55:12">
-        <select from="1894" to="1894"/>
-        <scroll column="898" row="0"/>
+        <select from="2158" to="2158"/>
+        <scroll column="812" row="0"/>
+      </file>
+      <file name="src/reasonablecare/ReasonableCare.java" package="reasonablecare" timestamp="08-Apr-2014 14:16:32">
+        <select from="2158" to="2158"/>
+        <scroll column="812" row="0"/>
+      </file>
+      <file name="src/reasonablecare/data/User.java" package="reasonablecare.data" timestamp="08-Apr-2014 14:19:13">
+        <select from="2158" to="2158"/>
+        <scroll column="812" row="0"/>
       </file>
     </source>
     <included/>
