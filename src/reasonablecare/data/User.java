@@ -4,8 +4,9 @@ import java.sql.*;
 
 public class User
 {
-  public static boolean logInUser(int type, DBMinder minder, int uid, String password)
+  public static boolean logInUser(int type, int uid, String password)
   {
+    DBMinder minder = DBMinder.instance();
     Connection conn = minder.getConnection();
     String personType = "";
     int returnedID = -1;
