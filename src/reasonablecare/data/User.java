@@ -59,6 +59,68 @@ public class User
     return returnedID == uid;
   }
   
+  /* returns the number of vaccines the student has received
+   * assumes that the vaccination reason is 'Vaccination'
+   */
+  public static int getVaccinesForStudent(int studentID)
+  {
+    DBMinder minder = DBMinder.instance();
+    int numVaccinations = 0;
+    Connection conn = minder.getConnection();
+    PreparedStatement ps;
+    ResultSet rs;
+    try
+    {
+      //retrieve the list of appointments
+      ps = conn.prepareStatement("SELECT count(*) AS vaccines FROM Appointment WHERE reason = (SELECT id FROM Specialization"
+                                +"WHERE name = 'Vaccination') AND apt_date < NOW() AND timestamp_canceled = NULL AND student_id = ?;");
+      ps.setInt(1, studentID);
+      rs = ps.executeQuery();
+      while(rs.next())
+      {
+        numVaccinations = rs.getInt(1);
+      }
+      rs.close();
+      return numVaccinations;
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return -1;
+  }
+  
+  /* returns whether or not a student is on hold based on their vaccination record
+   * TODO: Make sure that CURRENT_DATE and NOW() etc work
+   */
+  public static boolean isStudentHeld(int student)
+  {
+    DBMinder minder = DBMinder.instance();
+    int numVaccinations = getVaccinesForStudent(student);
+    Date whenAdmitted;
+    Connection conn = minder.getConnection();
+    PreparedStatement ps;
+    ResultSet rs;
+    try
+    {
+      //retrieve the list of appointments
+      ps = conn.prepareStatement("SELECT admit_date, CURRENT_DATE FROM Student WHERE student_id = ?;");
+      ps.setInt(1, student);
+      rs = ps.executeQuery();
+      while(rs.next())
+      {
+        numVaccinations = rs.getInt(1);
+      }
+      rs.close();
+      return numVaccinations > 3;
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return false;
+  }
+  
   /* returns true if an update on a user processed successfully
    * newName and newPass can be empty, in which case nothing happens
    * if either or both contain new values, the user is updated with those new values
