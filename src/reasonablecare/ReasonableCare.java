@@ -93,6 +93,8 @@ public class ReasonableCare
               }
               System.out.print("> ");
               reasonID = scan.nextInt();
+              Specialization special = specials.get(reasonID);
+              reasonID = special.id;
               if(doctorID == -1)
               {
                 List<User> doctors = doctorsWithSpecialization(reasonID);
@@ -150,7 +152,10 @@ public class ReasonableCare
                       }
                     }
                   }
-                  
+                  Insurance studentsInsurance = insuranceForStudent(uid);
+                  long paidCopay = Insurance.copayLeftForStudent(uid);
+                  long copayAmount = paidCopay < studentsInsurance.deductible? special.baseCost * studentsInsurance.copayPercent: 0;
+                  long insuranceCost = paidCopay < studentsInsurance.deductible? special.baseCost - copayAmount: special.baseCost;
                 }
                 else
                 {
