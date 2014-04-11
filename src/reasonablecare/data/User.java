@@ -15,7 +15,8 @@ public class User
   {
     STUDENT("Student"),
     NURSE("Nurse"),
-    DOCTOR("Doctor");
+    DOCTOR("Doctor"),
+    UNKNOWN("Unknown");
     public String dbName;
     UserType(String name)
     {
@@ -71,9 +72,11 @@ public class User
     ResultSet rs;
     try
     {
-      //retrieve the list of appointments
-      ps = conn.prepareStatement("SELECT count(*) AS vaccines FROM Appointment WHERE reason = (SELECT id FROM Specialization"
-                                +"WHERE name = 'Vaccination') AND apt_date < NOW() AND timestamp_canceled = NULL AND student_id = ?;");
+      //retrieve the number of vaccinations the student has received
+      //we assume that a non-canceled appointment in the past has been attended
+      ps = conn.prepareStatement("SELECT count(*) AS vaccines FROM Appointment WHERE reason = (SELECT id FROM Specialization "
+                                +"WHERE name = 'Vaccination') AND apt_date < (SELECT CURRENT_DATE FROM Dual) "
+                                +"AND timestamp_canceled = NULL AND student_id = ?;");
       ps.setInt(1, studentID);
       rs = ps.executeQuery();
       while(rs.next())
@@ -91,25 +94,25 @@ public class User
   }
   
   /* returns whether or not a student is on hold based on their vaccination record
-   * TODO: Make sure that CURRENT_DATE and NOW() etc work
    */
   public static boolean isStudentHeld(int student)
   {
     DBMinder minder = DBMinder.instance();
     int numVaccinations = getVaccinesForStudent(student);
-    Date whenAdmitted;
+    boolean semesterPassed;
     Connection conn = minder.getConnection();
     PreparedStatement ps;
     ResultSet rs;
     try
     {
-      //retrieve the list of appointments
-      ps = conn.prepareStatement("SELECT admit_date, CURRENT_DATE FROM Student WHERE student_id = ?;");
+      //the mathematical expression that is subtracted from CURRENT_DATE is a semester in days, estimated
+      ps = conn.prepareStatement("SELECT (CASE WHEN (admit_date <= (CURRENT_DATE - (30*4.5))) THEN 1 ELSE 0 END) AS semester "
+                                +"FROM Student WHERE id = ?;");
       ps.setInt(1, student);
       rs = ps.executeQuery();
       while(rs.next())
       {
-        numVaccinations = rs.getInt(1);
+        semesterPassed = rs.getInt(1) == 1;
       }
       rs.close();
       return numVaccinations > 3;

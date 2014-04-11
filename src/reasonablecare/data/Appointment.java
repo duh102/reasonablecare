@@ -28,7 +28,7 @@ public class Appointment
     Connection conn = minder.getConnection();
     try
     {
-      PreparedStatement ps = conn.prepareStatement("UPDATE Appointment SET timestamp_canceled = NOW() WHERE doctor_id = ? AND student_id = ? AND timestamp_created = ?");
+      PreparedStatement ps = conn.prepareStatement("UPDATE Appointment SET timestamp_canceled = (SELECT CURRENT_TIMESTAMP FROM Dual) WHERE doctor_id = ? AND student_id = ? AND timestamp_created = ?");
       ps.setInt(1, doctorID);
       ps.setInt(2, studentID);
       ps.setTimestamp(3, timeCreated);
