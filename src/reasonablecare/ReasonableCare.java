@@ -1,6 +1,8 @@
 package reasonablecare;
 
-import java.util.*;
+import java.util.List;
+import java.util.Scanner;
+import java.sql.*;
 
 import reasonablecare.data.*;
 
@@ -97,7 +99,7 @@ public class ReasonableCare
               reasonID = special.id;
               if(doctorID == -1)
               {
-                List<User> doctors = doctorsWithSpecialization(reasonID);
+                List<User> doctors = Specialization.doctorsWithSpecialization(reasonID);
                 System.out.println("Here's doctors that can help you with that, please choose one to make an appointment with.");
                 i = 0;
                 for(User doctor : doctors)
@@ -106,7 +108,7 @@ public class ReasonableCare
                 }
                 System.out.print("> ");
                 //unhandled exception: out of bounds
-                doctorID = doctors.get(scan.nextInt());
+                doctorID = doctors.get(scan.nextInt()).id;
               }
               boolean goodDay = false;
               String tempDateString;
@@ -134,9 +136,9 @@ public class ReasonableCare
                     if(schedule.contains(beginTime) && schedule.contains(endTime))
                     {
                       boolean goodRange = true;
-                      for(int i = beginTime; i < endTime && goodRange; i++)
+                      for(int timeTest = beginTime; timeTest < endTime && goodRange; timeTest++)
                       {
-                        if(!schedule.contains(i))
+                        if(!schedule.contains(timeTest))
                         {
                           goodRange = false;
                         }
@@ -152,10 +154,49 @@ public class ReasonableCare
                       }
                     }
                   }
-                  Insurance studentsInsurance = insuranceForStudent(uid);
+                  Insurance studentsInsurance = Insurance.insuranceForStudent(uid);
                   long paidCopay = Insurance.copayLeftForStudent(uid);
-                  long copayAmount = paidCopay < studentsInsurance.deductible? special.baseCost * studentsInsurance.copayPercent: 0;
+                  long copayAmount = paidCopay < studentsInsurance.deductible?
+                    Math.round(Math.min(special.baseCost * studentsInsurance.copayPercent,
+                             studentsInsurance.deductible - paidCopay))
+                    : 0;
                   long insuranceCost = paidCopay < studentsInsurance.deductible? special.baseCost - copayAmount: special.baseCost;
+                  System.out.printf("Your copayment for this visit will be $%ld, please enter your credit card information."
+                                 +"\nYou will not be charged until we confirm the appointment.", copayAmount);
+                  boolean goodCard = false;
+                  String ccNum = "", ccExp = "";
+                  while(!goodCard)
+                  {
+                    System.out.print("Credit card number> ");
+                    ccNum = scan.next();
+                    System.out.print("Expiration date (mm/yy)> ");
+                    ccExp = scan.next();
+                    if(CreditCard.checkCardAmount(ccNum, ccExp, copayAmount))
+                    {
+                      System.out.println("You've been preapproved for the copay amount.");
+                      goodCard = true;
+                    }
+                    else
+                    {
+                      System.out.println("The credit card company for that card refused preapproval, please try again or try a different card.");
+                    }
+                  }
+                  System.out.print("Before we go ahead and make the appointment, you can describe the problem in more detail to the doctor\n> ");
+                  String studentNotes = scan.next();
+                  System.out.println("Ok! We've got all the information we need. Attempting to confirm your appointment now...");
+                  if(Appointment.makeAppointment(reasonID, uid, dateOfApt, beginTime, endTime,
+                                        insuranceCost, copayAmount, ccExp, ccNum,
+                                        studentNotes, reasonID))
+                  {
+                    System.out.printf("You've successfully created the appointment! We will now charge your credit card."
+                                   +"\nYour appointment is on %s from %s to %s.\nNow logging you out.\n",
+                                      dateOfApt, formatTimeslot(beginTime), formatTimeslot(endTime));
+                  }
+                  else
+                  {
+                    System.out.println("We're sorry but we were unable to create your appointment."
+                                      +"\nPlease log in again and attempt to make another appointment.");
+                  }
                 }
                 else
                 {

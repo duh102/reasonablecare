@@ -50,6 +50,46 @@ public class Appointment
     return false;
   }
   
+  public static boolean makeAppointment(int doctorID, int studentID, Date aptDate, int timeBegin, int timeEnd,
+                                        long insurancePayment, long copayment, String ccExpiration, String ccNumber,
+                                        String patientObservedProblem, int reason)
+  {
+    DBMinder minder = DBMinder.instance();
+    Connection conn = minder.getConnection();
+    try
+    {
+      PreparedStatement ps = conn.prepareStatement("INSERT INTO Appointment (doctor_id, student_id, timestamp_created, apt_date,"
+         +" time_slot_beginning, time_slot_end, insurance_payment, copay, cc_expr, cc_num, doctor_notes, patient_observed_problem, reason)"
+         +" VALUES (?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, ?, '', ?, ?)");
+      ps.setInt(1, doctorID);
+      ps.setInt(2, studentID);
+      ps.setDate(3, aptDate);
+      ps.setInt(4, timeBegin);
+      ps.setInt(5, timeEnd);
+      ps.setInt(6, (int)insurancePayment);
+      ps.setInt(7, (int)copayment);
+      ps.setString(8, ccExpiration);
+      ps.setString(9, ccNumber);
+      ps.setString(10, patientObservedProblem);
+      ps.setInt(11, reason);
+      int numRowsAffected = ps.executeUpdate();
+      //each insert really shouldn't affect more than one row, that'd be really weird
+      if(numRowsAffected >= 1)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return false;
+  }
+  
   public static List<Appointment> allAppointmentsForStudent(int studentID)
   {
     DBMinder minder = DBMinder.instance();
