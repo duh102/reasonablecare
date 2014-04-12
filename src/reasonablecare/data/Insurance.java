@@ -2,6 +2,9 @@ package reasonablecare.data;
 
 import java.sql.*;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class Insurance
 {
   public int id;
@@ -15,6 +18,57 @@ public class Insurance
     this.name = name;
     this.deductible = deductible;
     this.copayPercent = copayPercent;
+  }
+  
+  public static boolean updateInsurance(int id, String newName, long newDeductible, double newCopay)
+  {
+    DBMinder minder = DBMinder.instance();
+    Connection conn = minder.getConnection();
+    int neededModifications = 0, doneModifications = 0;
+    try
+    {
+      if(newName.length() > 0)
+      {
+        neededModifications++;
+        PreparedStatement ps = conn.prepareStatement("UPDATE Insurance SET name = ? WHERE id = ?");
+        ps.setString(1, newName);
+        ps.setInt(2, id);
+        int numRowsAffected = ps.executeUpdate();
+        doneModifications+= numRowsAffected;
+      }
+      if(newDeductible >= 0)
+      {
+        neededModifications++;
+        PreparedStatement ps = conn.prepareStatement("UPDATE Insurance SET deductible = ? WHERE id = ?");
+        ps.setLong(1, newDeductible);
+        ps.setInt(2, id);
+        int numRowsAffected = ps.executeUpdate();
+        doneModifications+= numRowsAffected;
+      }
+      if(newCopay >= 0.0)
+      {
+        neededModifications++;
+        PreparedStatement ps = conn.prepareStatement("UPDATE Insurance SET copay_percentage = ? WHERE id = ?");
+        ps.setInt(1, (int)newCopay*100);
+        ps.setInt(2, id);
+        int numRowsAffected = ps.executeUpdate();
+        doneModifications+= numRowsAffected;
+      }
+      //each update really shouldn't affect more than one row, that'd be really weird
+      if(doneModifications >= neededModifications)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return false;
   }
   
   public static Insurance insuranceForStudent(int studentID)
@@ -34,6 +88,31 @@ public class Insurance
       while(rs.next())
       {
         toReturn = new Insurance(rs.getInt(1), rs.getString(2), rs.getLong(3), ((double)rs.getInt(4))/100.0);
+      }
+      rs.close();
+      return toReturn;
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return toReturn;
+  }
+  
+  public static List<Insurance> insurances()
+  {
+    DBMinder minder = DBMinder.instance();
+    Connection conn = minder.getConnection();
+    PreparedStatement ps;
+    ResultSet rs;
+    List<Insurance> toReturn = new ArrayList<Insurance>();
+    try
+    {
+      ps = conn.prepareStatement("SELECT id, name, deductible, copay_percentage FROM Insurance ORDER BY id ASC");
+      rs = ps.executeQuery();
+      while(rs.next())
+      {
+        toReturn.add(new Insurance(rs.getInt(1), rs.getString(2), rs.getLong(3), ((double)rs.getInt(4))/100.0));
       }
       rs.close();
       return toReturn;

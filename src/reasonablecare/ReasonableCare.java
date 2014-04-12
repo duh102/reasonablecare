@@ -21,87 +21,90 @@ public class ReasonableCare
                        +"[0] Student\n"
                        +"[1] Nurse\n"
                        +"[2] Doctor\n"
+                       +"[3] Register a new Student\n"
                        +"> ");
     int type = scan.nextInt();
-    System.out.print("\nUser ID:\n> ");
-    int uid = scan.nextInt();
-    System.out.print("\nPassword:\n> ");
-    String pass = scan.next();
-    
-    switch(type)
+    if(type >= 0 && type <= 2)
     {
-      case 0:
-        System.out.printf("\nYou're attempting to log in as a %s with UID [%d] and password '%s'\n", User.UserType.STUDENT.dbName, uid, pass);
-        loggedIn = User.logInUser(User.UserType.STUDENT, uid, pass);
-        userType = User.UserType.STUDENT;
-        break;
-      case 1:
-        System.out.printf("\nYou're attempting to log in as a nurse with UID [%d] and password '%s'\n", uid, pass);
-        loggedIn = User.logInUser(User.UserType.NURSE, uid, pass);
-        userType = User.UserType.NURSE;
-        break;
-      case 2:
-        System.out.printf("\nYou're attempting to log in as a doctor with UID [%d] and password '%s'\n", uid, pass);
-        loggedIn = User.logInUser(User.UserType.DOCTOR, uid, pass);
-        userType = User.UserType.DOCTOR;
-        break;
-      default:
-        System.out.printf("\nYou're attempting to log in as a [%d] with UID [%d] and password '%s'\nYou can't do that, stop.\n", type, uid, pass);
-        break;
-    }
-    if(loggedIn)
-    {
-      System.out.println("Logged in successfully.");
-      switch(userType)
+      System.out.print("\nUser ID:\n> ");
+      int uid = scan.nextInt();
+      System.out.print("\nPassword:\n> ");
+      String pass = scan.next();
+      
+      switch(type)
       {
-        case STUDENT:
-          System.out.print("Here's the operations you can perform!\n"
+        case 0:
+          System.out.printf("\nYou're attempting to log in as a %s with UID [%d] and password '%s'\n", User.UserType.STUDENT.dbName, uid, pass);
+          loggedIn = User.logInUser(User.UserType.STUDENT, uid, pass);
+          userType = User.UserType.STUDENT;
+          break;
+        case 1:
+          System.out.printf("\nYou're attempting to log in as a nurse with UID [%d] and password '%s'\n", uid, pass);
+          loggedIn = User.logInUser(User.UserType.NURSE, uid, pass);
+          userType = User.UserType.NURSE;
+          break;
+        case 2:
+          System.out.printf("\nYou're attempting to log in as a doctor with UID [%d] and password '%s'\n", uid, pass);
+          loggedIn = User.logInUser(User.UserType.DOCTOR, uid, pass);
+          userType = User.UserType.DOCTOR;
+          break;
+        default:
+          System.out.printf("\nYou're attempting to log in as a [%d] with UID [%d] and password '%s'\nYou can't do that, stop.\n", type, uid, pass);
+          break;
+      }
+      if(loggedIn)
+      {
+        System.out.println("Logged in successfully.");
+        switch(userType)
+        {
+          case STUDENT:
+            System.out.print("Here's the operations you can perform!\n"
                                +"[0] Update user account\n"
                                +"[1] Check if your account is held\n"
                                +"[2] Make an Appointment\n"
                                +"[3] Check appointments\n"
                                +"[4] Cancel an appointment\n"
                                +"> ");
-          int command = scan.nextInt();
-          switch(command)
-          {
-            case 0:
-              System.out.println("\nUnimplemented");
-              break;
-            case 1:
-              boolean isHeld = User.isStudentHeld(uid);
-              int numberVaccinations = User.getVaccinesForStudent(uid);
-              if(isHeld)
-              {
-                System.out.printf("Your account has been held, you have %d of 3 required vaccinations."
-                                    +"\nPlease make appointment(s) to receive your vaccinations.\n", numberVaccinations);
-              }
-              else
-              {
-                System.out.printf("Your account is not held and you have had %d of 3 required vaccinations."
-                                  +"\nIf you have not gotten all of your required vaccinations, please make appointment(s) to receive them.", numberVaccinations);
-              }
-              break;
-            case 2:
-              System.out.println("\n======== Make Appointment ========");
-              int doctorID = -1, reasonID = -1, beginTime = -1, endTime = -1;
-              Date dateOfApt = null;
-              //Deciding the doctor
-              System.out.print("First, do you have a doctor in mind?\n[0] Yes [1] No\n> ");
-              int choice = scan.nextInt();
-              if(choice == 0)
-              {
-                System.out.print("What's the id of the doctor you had in mind?\n> ");
-                doctorID = scan.nextInt();
-                System.out.println("Ok, we'll use that doctor.");
-              }
-              else
-              {
-                System.out.println("That's ok, we'll find you one based on your reason for visiting.");
-              }
-              System.out.println("What is the reason for your visit? Please choose from the following.");
-              List<Specialization> specials = Specialization.listSpecializations();
-              int i = 0;
+            int command = scan.nextInt();
+            switch(command)
+            {
+              case 0:
+                System.out.println("\nUnimplemented");
+                break;
+              case 1:
+                boolean isHeld = User.isStudentHeld(uid);
+                int numberVaccinations = User.getVaccinesForStudent(uid);
+                if(isHeld)
+                {
+                  System.out.printf("Your account has been held, you have %d of 3 required vaccinations."
+                                      +"\nPlease make appointment(s) to receive your vaccinations.\n", numberVaccinations);
+                }
+                else
+                {
+                  System.out.printf("Your account is not held and you have had %d of 3 required vaccinations."
+                                      +"\nIf you have not gotten all of your required vaccinations, please make appointment(s) to receive them.", numberVaccinations);
+                }
+                break;
+              case 2:
+                System.out.println("\n======== Make Appointment ========");
+                int doctorID = -1, reasonID = -1, beginTime = -1, endTime = -1;
+                Date dateOfApt = null;
+                //Deciding the doctor
+                System.out.print("First, do you have a doctor in mind?\n[0] Yes [1] No\n> ");
+                int choice = scan.nextInt();
+                if(choice == 0)
+                {
+                  System.out.print("What's the id of the doctor you had in mind?\n> ");
+                  doctorID = scan.nextInt();
+                  System.out.println("Ok, we'll use that doctor.");
+                }
+                else
+                {
+                  System.out.println("That's ok, we'll find you one based on your reason for visiting.");
+                }
+                System.out.println("What is the reason for your visit? Please choose from the following.");
+                List<Specialization> specials = Specialization.listSpecializations();
+                int i = 0;
               for(Specialization special : specials)
               {
                 System.out.printf("[%d] %s\n", i++, special.displayName);
@@ -218,57 +221,86 @@ public class ReasonableCare
                                      +"\nPlease log in again and attempt to make another appointment.");
               }
               break;
-            case 3:
-              System.out.println("\nHere are all your appointments:");
-              List<Appointment> appointments = Appointment.allAppointmentsForStudent(uid);
+              case 3:
+                System.out.println("\nHere are all your appointments:");
+                List<Appointment> appointments = Appointment.allAppointmentsForStudent(uid);
               for(Appointment apt : appointments)
               {
                 System.out.println(apt);
               }
               break;
-            case 4:
-              List<Appointment> pendingAppointments = Appointment.allPendingAppointmentsForStudent(uid);
-              if(pendingAppointments.size() > 0)
-              {
-                System.out.println("Here are all your pending appointments, choose one to cancel:");
-                i = 0;
-                for(Appointment apt : pendingAppointments)
+              case 4:
+                List<Appointment> pendingAppointments = Appointment.allPendingAppointmentsForStudent(uid);
+                if(pendingAppointments.size() > 0)
                 {
-                  System.out.printf("[%d] %s\n", i++, apt);
-                }
-                int aptToCancel = scan.nextInt();
-                System.out.println("Ok, we'll cancel that appointment.");
-                Appointment toCancel = pendingAppointments.get(aptToCancel);
-                if(Appointment.cancelAppointment(toCancel.doctorID, toCancel.studentID,toCancel.whenMade))
-                {
-                  System.out.println("Appointment canceled, logging you out.");
+                  System.out.println("Here are all your pending appointments, choose one to cancel:");
+                  i = 0;
+                  for(Appointment apt : pendingAppointments)
+                  {
+                    System.out.printf("[%d] %s\n", i++, apt);
+                  }
+                  int aptToCancel = scan.nextInt();
+                  System.out.println("Ok, we'll cancel that appointment.");
+                  Appointment toCancel = pendingAppointments.get(aptToCancel);
+                  if(Appointment.cancelAppointment(toCancel.doctorID, toCancel.studentID,toCancel.whenMade))
+                  {
+                    System.out.println("Appointment canceled, logging you out.");
+                  }
+                  else
+                  {
+                    System.out.println("Unable to cancel appointment, please speak with a receptionist.");
+                  }
                 }
                 else
                 {
-                  System.out.println("Unable to cancel appointment, please speak with a receptionist.");
+                  System.out.println("You don't have any pending appointments. Logging you out.");
                 }
-              }
-              else
-              {
-                System.out.println("You don't have any pending appointments. Logging you out.");
-              }
-              break;
-            default:
-              System.out.println("\nNot a valid command, logging out");
-              break;
-          }
-          break;
-        case NURSE:
-          System.out.println("\nUnimplemented");
-          break;
-        case DOCTOR:
-          System.out.println("\nUnimplemented");
-          break;
+                break;
+              default:
+                System.out.println("\nNot a valid command, logging out");
+                break;
+            }
+            break;
+          case NURSE:
+            System.out.println("\nUnimplemented");
+            break;
+          case DOCTOR:
+            System.out.println("\nUnimplemented");
+            break;
+        }
+      }
+      else
+      {
+        System.out.println("Unable to login with those credentials. Sorry!");
       }
     }
     else
     {
-      System.out.println("Unable to login with those credentials. Sorry!");
+      System.out.print("\nName:\n> ");
+      String name = scan.next();
+      System.out.print("\nPassword:\n> ");
+      String pass = scan.next();
+      System.out.println("Please select from the below insurances your insurance provider.");
+      List<Insurance> insurances = Insurance.insurances();
+      int i = 0;
+      for(Insurance ins : insurances)
+      {
+        System.out.printf("[%d] %s\n", i++, ins.name);
+      }
+      System.out.print("> ");
+      int insuranceIndex = scan.nextInt();
+      System.out.println("When were you admitted to school? Please enter in yyyy-mm-dd format.");
+      Date whenAdmit = Date.valueOf(scan.next());
+      System.out.println("Registering you in the database...");
+      User newStudent = User.registerStudent(name, pass, whenAdmit, insurances.get(insuranceIndex).id);
+      if(newStudent != null)
+      {
+        System.out.printf("You've been registered as user [%d], please remember this number in order to log in.\n", newStudent.id);
+      }
+      else
+      {
+        System.out.println("Unable to register you, please check your credentials and try again.");
+      }
     }
     DBMinder.instance().close();
     System.out.println("Goodbye!");

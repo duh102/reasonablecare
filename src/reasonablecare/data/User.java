@@ -31,6 +31,46 @@ public class User
     this.type = newType;
   }
   
+  public static User registerStudent(String name, String password, Date admitDate, int insuranceID)
+  {
+    DBMinder minder = DBMinder.instance();
+    Connection conn = minder.getConnection();
+    User toReturn = null;
+    try
+    {
+      //don't want to view other people's inserts when we're selecting
+      conn.setAutoCommit(false);
+      PreparedStatement ps = conn.prepareStatement("INSERT INTO Student (id, name, login_info, admit_date, insurance_id)"
+                                                  +"VALUES (studentID.nextval, ?, ?, ?, ?)");
+      ps.setString(1, name);
+      ps.setString(2, password);
+      ps.setDate(3, admitDate);
+      ps.setInt(4, insuranceID);
+      int numRowsAffected = ps.executeUpdate();
+      //each insert really shouldn't affect more than one row, that'd be really weird
+      if(numRowsAffected >= 1)
+      {
+        ps = conn.prepareStatement("SELECT * FROM (SELECT id, name FROM Student ORDER BY id DESC) WHERE ROWNUM <=1");
+        ResultSet rs = ps.executeQuery();
+        while(rs.next())
+        {
+          toReturn = new User(rs.getInt(1),rs.getString(2),UserType.STUDENT);
+        }
+        conn.commit();
+        return toReturn;
+      }
+      else
+      {
+        conn.commit();
+        return toReturn;
+      }
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return toReturn;
+  }
   
   /* returns the true if a given user of given type and given password match what is in the database
    * this is not very secure and I would never use this in production code but it works
@@ -146,6 +186,7 @@ public class User
       }
       if(newPass.length() > 0)
       {
+        neededModifications++;
         PreparedStatement ps = conn.prepareStatement("UPDATE "+type.dbName+" SET Login_Info = ? WHERE id = ?");
         ps.setString(1, newPass);
         ps.setInt(2, uid);
@@ -154,6 +195,33 @@ public class User
       }
       //each update really shouldn't affect more than one row, that'd be really weird
       if(doneModifications >= neededModifications)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return false;
+  }
+  
+  public static boolean updateDoctor(int doctorID, String phoneNum)
+  {
+    DBMinder minder = DBMinder.instance();
+    Connection conn = minder.getConnection();
+    try
+    {
+      PreparedStatement ps = conn.prepareStatement("UPDATE Doctor SET phone_num = ? WHERE id = ?");
+      ps.setString(1, phoneNum);
+      ps.setInt(2, doctorID);
+      int numRowsAffected = ps.executeUpdate();
+      //each update really shouldn't affect more than one row, that'd be really weird
+      if(numRowsAffected >= 1)
       {
         return true;
       }

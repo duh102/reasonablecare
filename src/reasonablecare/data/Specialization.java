@@ -20,11 +20,46 @@ public class Specialization
     baseCost = newCost;
   }
   
-  /* this is likely mostly useless but I put it in for the hell of it
-   */
-  public int compareTo(Specialization other)
+  public static boolean updateSpecialization(int id, String newName, long newCost)
   {
-    return (new Integer(id)).compareTo(new Integer(other.id));
+    DBMinder minder = DBMinder.instance();
+    Connection conn = minder.getConnection();
+    int neededModifications = 0, doneModifications = 0;
+    try
+    {
+      if(newName.length() > 0)
+      {
+        neededModifications++;
+        PreparedStatement ps = conn.prepareStatement("UPDATE Specialization SET display_name = ? WHERE id = ?");
+        ps.setString(1, newName);
+        ps.setInt(2, id);
+        int numRowsAffected = ps.executeUpdate();
+        doneModifications+= numRowsAffected;
+      }
+      if(newCost != -1)
+      {
+        neededModifications++;
+        PreparedStatement ps = conn.prepareStatement("UPDATE Specialization SET base_cost = ? WHERE id = ?");
+        ps.setLong(1, newCost);
+        ps.setInt(2, id);
+        int numRowsAffected = ps.executeUpdate();
+        doneModifications+= numRowsAffected;
+      }
+      //each update really shouldn't affect more than one row, that'd be really weird
+      if(doneModifications >= neededModifications)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return false;
   }
   
   /* returns a list of all specializations in the database

@@ -6,6 +6,35 @@ import java.sql.*;
 
 public class Schedule
 {
+  public static boolean updateDoctorSchedule(int doctorID, int dayNum, int slotStart, int slotEnd)
+  {
+    DBMinder minder = DBMinder.instance();
+    Connection conn = minder.getConnection();
+    try
+    {
+      PreparedStatement ps = conn.prepareStatement("UPDATE WorkDay SET start_timeslot = ?, end_timeslot = ? WHERE doctor_id = ? AND day_of_week = ?");
+      ps.setInt(1, slotStart);
+      ps.setInt(2, slotEnd);
+      ps.setInt(3, doctorID);
+      ps.setInt(4, dayNum);
+      int numRowsAffected = ps.executeUpdate();
+      //each update really shouldn't affect more than one row, that'd be really weird
+      if(numRowsAffected >= 1)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return false;
+  }
+  
   /* returns the free slots during the day that a given doctor has on a given day
    */
   public static List<Integer> retrieveDoctorFreeSlots(Date date, int doctorID)
