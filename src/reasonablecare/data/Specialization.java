@@ -39,7 +39,7 @@ public class Specialization
     try
     {
       //retrieve the list of specializations
-      ps = conn.prepareStatement("SELECT id, display_name, cost FROM Specialization ORDER BY id ASC;");
+      ps = conn.prepareStatement("SELECT id, display_name, cost FROM Specialization ORDER BY id ASC");
       rs = ps.executeQuery();
       while(rs.next())
       {
@@ -67,7 +67,7 @@ public class Specialization
     try
     {
       //retrieve the list of specializations
-      ps = conn.prepareStatement("SELECT id, name FROM Doctor ORDER BY id ASC;");
+      ps = conn.prepareStatement("SELECT id, name FROM Doctor ORDER BY id ASC");
       rs = ps.executeQuery();
       while(rs.next())
       {

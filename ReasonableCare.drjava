@@ -3,37 +3,37 @@
   <project autorefresh="false" build="bin/" main="src.reasonablecare.ReasonableCare" root="" work="src/">
     <createjar file=""/>
     <source>
-      <file active="true" name="src/reasonablecare/ReasonableCare.java" package="reasonablecare" timestamp="11-Apr-2014 20:36:39">
-        <select from="7445" to="7445"/>
-        <scroll column="2750" row="0"/>
-      </file>
-      <file name="src/reasonablecare/data/Specialization.java" package="reasonablecare.data" timestamp="08-Apr-2014 14:20:21">
-        <select from="7445" to="7445"/>
-        <scroll column="2750" row="0"/>
+      <file active="true" name="src/reasonablecare/data/User.java" package="reasonablecare.data" timestamp="12-Apr-2014 13:48:32">
+        <select from="2213" to="2213"/>
+        <scroll column="586" row="0"/>
       </file>
       <file name="src/reasonablecare/data/DBMinder.java" package="reasonablecare.data" timestamp="03-Apr-2014 17:21:06">
-        <select from="7445" to="7445"/>
-        <scroll column="2750" row="0"/>
-      </file>
-      <file name="src/reasonablecare/data/Schedule.java" package="reasonablecare.data" timestamp="08-Apr-2014 13:55:12">
-        <select from="7445" to="7445"/>
-        <scroll column="2750" row="0"/>
-      </file>
-      <file name="src/reasonablecare/data/User.java" package="reasonablecare.data" timestamp="11-Apr-2014 17:23:37">
-        <select from="7445" to="7445"/>
-        <scroll column="2750" row="0"/>
-      </file>
-      <file name="src/reasonablecare/data/Appointment.java" package="reasonablecare.data" timestamp="11-Apr-2014 20:30:39">
-        <select from="7445" to="7445"/>
-        <scroll column="2750" row="0"/>
-      </file>
-      <file name="src/reasonablecare/data/Insurance.java" package="reasonablecare.data" timestamp="11-Apr-2014 20:33:17">
-        <select from="7445" to="7445"/>
-        <scroll column="2750" row="0"/>
+        <select from="2213" to="2213"/>
+        <scroll column="586" row="0"/>
       </file>
       <file name="src/reasonablecare/data/CreditCard.java" package="reasonablecare.data" timestamp="11-Apr-2014 20:35:40">
-        <select from="7445" to="7445"/>
-        <scroll column="2750" row="0"/>
+        <select from="2213" to="2213"/>
+        <scroll column="586" row="0"/>
+      </file>
+      <file name="src/reasonablecare/data/Specialization.java" package="reasonablecare.data" timestamp="12-Apr-2014 11:14:38">
+        <select from="2213" to="2213"/>
+        <scroll column="586" row="0"/>
+      </file>
+      <file name="src/reasonablecare/data/Schedule.java" package="reasonablecare.data" timestamp="12-Apr-2014 11:26:03">
+        <select from="2213" to="2213"/>
+        <scroll column="586" row="0"/>
+      </file>
+      <file name="src/reasonablecare/data/Insurance.java" package="reasonablecare.data" timestamp="12-Apr-2014 11:27:44">
+        <select from="2213" to="2213"/>
+        <scroll column="586" row="0"/>
+      </file>
+      <file name="src/reasonablecare/data/Appointment.java" package="reasonablecare.data" timestamp="12-Apr-2014 13:43:32">
+        <select from="2213" to="2213"/>
+        <scroll column="586" row="0"/>
+      </file>
+      <file name="src/reasonablecare/ReasonableCare.java" package="reasonablecare" timestamp="12-Apr-2014 13:55:11">
+        <select from="2213" to="2213"/>
+        <scroll column="586" row="0"/>
       </file>
     </source>
     <included/>

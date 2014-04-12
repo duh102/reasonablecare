@@ -18,8 +18,8 @@ public class Schedule
     try
     {
       //retrieve hours working
-      int timeBegin = 0, timeEnd = 0;
-      ps = conn.prepareStatement("SELECT start_timeslot, end_timeslot FROM WorkDay WHERE doctor_id = ? AND day_of_week = (SELECT D - 1 FROM(SELECT TO_CHAR (DATE ?, 'D') D FROM DUAL))");
+      int timeBegin = -1, timeEnd = -1;
+      ps = conn.prepareStatement("SELECT start_timeslot, end_timeslot FROM WorkDay WHERE doctor_id = ? AND day_of_week = (SELECT D - 1 FROM(SELECT TO_CHAR (?, 'D') D FROM DUAL))");
       ps.setInt(1, doctorID);
       ps.setDate(2, date);
       rs = ps.executeQuery();
@@ -31,9 +31,12 @@ public class Schedule
       rs.close();
       
       //expand hours working
-      for(int i = timeBegin; i <= timeEnd; i++)
+      if(timeBegin != -1 && timeEnd != -1)
       {
-        toReturn.add(new Integer(i));
+        for(int i = timeBegin; i <= timeEnd; i++)
+        {
+          toReturn.add(new Integer(i));
+        }
       }
       
       //retrieve appointments that date

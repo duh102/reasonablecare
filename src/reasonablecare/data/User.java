@@ -43,11 +43,11 @@ public class User
     int returnedID = -1;
     try
     {
-      PreparedStatement ps = conn.prepareStatement("SELECT id FROM "+type.dbName+" WHERE id = ? AND Login_Info = ?");
+      PreparedStatement ps = conn.prepareStatement("SELECT id FROM "+type.dbName+" WHERE id = ? AND login_info = ?");
       ps.setInt(1, uid);
       ps.setString(2, password);
       ResultSet rs = ps.executeQuery();
-      if(rs.next())
+      while(rs.next())
       {
         returnedID = rs.getInt(1);
       }
@@ -75,8 +75,8 @@ public class User
       //retrieve the number of vaccinations the student has received
       //we assume that a non-canceled appointment in the past has been attended
       ps = conn.prepareStatement("SELECT count(*) AS vaccines FROM Appointment WHERE reason = (SELECT id FROM Specialization "
-                                +"WHERE name = 'Vaccination') AND apt_date < (SELECT CURRENT_DATE FROM Dual) "
-                                +"AND timestamp_canceled = NULL AND student_id = ?;");
+                                +"WHERE display_name = 'Vaccination') AND apt_date < CURRENT_DATE "
+                                +"AND timestamp_canceled IS NULL AND student_id = ?");
       ps.setInt(1, studentID);
       rs = ps.executeQuery();
       while(rs.next())
@@ -99,7 +99,7 @@ public class User
   {
     DBMinder minder = DBMinder.instance();
     int numVaccinations = getVaccinesForStudent(student);
-    boolean semesterPassed;
+    boolean semesterPassed = false;
     Connection conn = minder.getConnection();
     PreparedStatement ps;
     ResultSet rs;
@@ -107,7 +107,7 @@ public class User
     {
       //the mathematical expression that is subtracted from CURRENT_DATE is a semester in days, estimated
       ps = conn.prepareStatement("SELECT (CASE WHEN (admit_date <= (CURRENT_DATE - (30*4.5))) THEN 1 ELSE 0 END) AS semester "
-                                +"FROM Student WHERE id = ?;");
+                                +"FROM Student WHERE id = ?");
       ps.setInt(1, student);
       rs = ps.executeQuery();
       while(rs.next())
@@ -115,7 +115,7 @@ public class User
         semesterPassed = rs.getInt(1) == 1;
       }
       rs.close();
-      return numVaccinations > 3;
+      return numVaccinations < 3 && semesterPassed;
     }
     catch(SQLException sqle)
     {

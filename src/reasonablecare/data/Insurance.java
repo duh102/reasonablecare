@@ -27,7 +27,8 @@ public class Insurance
     try
     {
       //the mathematical expression that is subtracted from CURRENT_DATE is a semester in days, estimated
-      ps = conn.prepareStatement("SELECT id, name, deductible, copay_percentage FROM Student, Insurance WHERE Student.id = ? AND Student.insurance_id = Insurance.id;");
+      ps = conn.prepareStatement("SELECT Insurance.id, Insurance.name, Insurance.deductible, Insurance.copay_percentage "
+                                +"FROM Student, Insurance WHERE Student.id = ? AND Student.insurance_id = Insurance.id");
       ps.setInt(1, studentID);
       rs = ps.executeQuery();
       while(rs.next())
@@ -54,7 +55,7 @@ public class Insurance
     try
     {
       //the mathematical expression that is subtracted from CURRENT_DATE is a semester in days, estimated
-      ps = conn.prepareStatement("SELECT sum(copay) FROM Appointment WHERE student_id = ? AND to_char(apt_date, 'YYYY') = to_char(CURRENT_DATE, 'YYYY');");
+      ps = conn.prepareStatement("SELECT sum(copay) FROM Appointment WHERE student_id = ? AND to_char(apt_date, 'YYYY') = to_char(CURRENT_DATE, 'YYYY')");
       ps.setInt(1, studentID);
       rs = ps.executeQuery();
       while(rs.next())

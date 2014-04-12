@@ -1,5 +1,7 @@
 package reasonablecare.data;
 
+import reasonablecare.ReasonableCare;
+
 import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -20,6 +22,11 @@ public class Appointment
     this.endTime = endTime;
     this.whenMade = whenMade;
     this.whenCanceled = whenCanceled;
+  }
+  
+  public String toString()
+  {
+    return String.format("Appointment on %s from %s to %s, cancelled: %s", when, ReasonableCare.formatTimeslot(startTime), ReasonableCare.formatTimeslot(endTime), whenCanceled == null? "NO": "YES");
   }
   
   public static boolean cancelAppointment(int doctorID, int studentID, Timestamp timeCreated)
@@ -100,8 +107,37 @@ public class Appointment
     try
     {
       //retrieve the list of appointments
-      ps = conn.prepareStatement("SELECT doctor_id, student_id, reason, apt_date, time_slot_beginning, time_slot_end, timestamp_created, timestamp_canceled"
-                                +"FROM Appointment where student_id = ? ORDER BY timestamp_created DESC;");
+      ps = conn.prepareStatement("SELECT doctor_id, student_id, reason, apt_date, time_slot_beginning, time_slot_end, timestamp_created, timestamp_canceled "
+                                +"FROM Appointment where student_id = ? ORDER BY timestamp_created DESC");
+      ps.setInt(1, studentID);
+      rs = ps.executeQuery();
+      while(rs.next())
+      {
+        toReturn.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getDate(4), rs.getInt(5), rs.getInt(6), rs.getTimestamp(7), rs.getTimestamp(8)));
+      }
+      rs.close();
+      return toReturn;
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return null;
+  }
+  
+  public static List<Appointment> allPendingAppointmentsForStudent(int studentID)
+  {
+    DBMinder minder = DBMinder.instance();
+    ArrayList<Appointment> toReturn = new ArrayList<Appointment>();
+    Connection conn = minder.getConnection();
+    PreparedStatement ps;
+    ResultSet rs;
+    try
+    {
+      //retrieve the list of appointments
+      ps = conn.prepareStatement("SELECT doctor_id, student_id, reason, apt_date, time_slot_beginning, time_slot_end, timestamp_created, timestamp_canceled "
+                                +"FROM Appointment where student_id = ? AND apt_date > CURRENT_DATE AND timestamp_canceled = NULL ORDER BY timestamp_created DESC");
+      ps.setInt(1, studentID);
       rs = ps.executeQuery();
       while(rs.next())
       {
@@ -127,8 +163,9 @@ public class Appointment
     try
     {
       //retrieve the list of appointments
-      ps = conn.prepareStatement("SELECT doctor_id, student_id, reason, apt_date, time_slot_beginning, time_slot_end, timestamp_created, timestamp_canceled"
-                                +"FROM Appointment where doctor_id = ? ORDER BY timestamp_created DESC;");
+      ps = conn.prepareStatement("SELECT doctor_id, student_id, reason, apt_date, time_slot_beginning, time_slot_end, timestamp_created, timestamp_canceled "
+                                +"FROM Appointment where doctor_id = ? ORDER BY timestamp_created DESC");
+      ps.setInt(1, doctorID);
       rs = ps.executeQuery();
       while(rs.next())
       {
