@@ -1,5 +1,7 @@
 package reasonablecare.data;
 
+/* this class is only used to return a student record along with a hold status
+ */
 public class StudentHeldRecord
 {
   public int studentID;

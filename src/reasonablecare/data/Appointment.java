@@ -29,6 +29,8 @@ public class Appointment
     return String.format("Appointment on %s from %s to %s, cancelled: %s", when, ReasonableCare.formatTimeslot(startTime), ReasonableCare.formatTimeslot(endTime), whenCanceled == null? "NO": "YES");
   }
   
+  /* returns true if the appointment was canceled
+   */
   public static boolean cancelAppointment(int doctorID, int studentID, Timestamp timeCreated)
   {
     DBMinder minder = DBMinder.instance();
@@ -57,6 +59,8 @@ public class Appointment
     return false;
   }
   
+  /* returns true if the appointment was made successfully
+   */
   public static boolean makeAppointment(int doctorID, int studentID, Date aptDate, int timeBegin, int timeEnd,
                                         long insurancePayment, long copayment, String ccExpiration, String ccNumber,
                                         String patientObservedProblem, int reason)
@@ -97,6 +101,8 @@ public class Appointment
     return false;
   }
   
+  /* lists all appointments for the student, canceled, passed, or not
+   */
   public static List<Appointment> allAppointmentsForStudent(int studentID)
   {
     DBMinder minder = DBMinder.instance();
@@ -125,6 +131,8 @@ public class Appointment
     return null;
   }
   
+  /* returns a list of appointments the student has yet to go to, not canceled
+   */
   public static List<Appointment> allPendingAppointmentsForStudent(int studentID)
   {
     DBMinder minder = DBMinder.instance();
@@ -153,6 +161,8 @@ public class Appointment
     return null;
   }
   
+  /* returns a list of all appointments that a given doctor is involved in
+   */
   public static List<Appointment> allAppointmentsForDoctor(int doctorID)
   {
     DBMinder minder = DBMinder.instance();

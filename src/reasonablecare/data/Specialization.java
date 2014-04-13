@@ -20,6 +20,8 @@ public class Specialization
     baseCost = newCost;
   }
   
+  /* returns true if the update was successful
+   */
   public static boolean updateSpecialization(int id, String newName, long newCost)
   {
     DBMinder minder = DBMinder.instance();
@@ -62,6 +64,8 @@ public class Specialization
     return false;
   }
   
+  /* returns true if the update was successful
+   */
   public static boolean setDoctorHasSpecialization(int doctorID, int specializationID, boolean doesHave)
   {
     DBMinder minder = DBMinder.instance();
@@ -185,7 +189,7 @@ public class Specialization
     return null;
   }
   
-  /* returns a list of doctors with the given specialization ID
+  /* returns a list of doctors with the given specialization
    */
   public static List<User> doctorsWithSpecialization(int specID)
   {
