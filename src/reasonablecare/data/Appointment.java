@@ -136,7 +136,7 @@ public class Appointment
     {
       //retrieve the list of appointments
       ps = conn.prepareStatement("SELECT doctor_id, student_id, reason, apt_date, time_slot_beginning, time_slot_end, timestamp_created, timestamp_canceled "
-                                +"FROM Appointment where student_id = ? AND apt_date > CURRENT_DATE AND timestamp_canceled = NULL ORDER BY timestamp_created DESC");
+                                +"FROM Appointment where student_id = ? AND apt_date > CURRENT_DATE AND timestamp_canceled IS NULL ORDER BY timestamp_created DESC");
       ps.setInt(1, studentID);
       rs = ps.executeQuery();
       while(rs.next())

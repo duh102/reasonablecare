@@ -12,11 +12,21 @@ public class Schedule
     Connection conn = minder.getConnection();
     try
     {
-      PreparedStatement ps = conn.prepareStatement("UPDATE WorkDay SET start_timeslot = ?, end_timeslot = ? WHERE doctor_id = ? AND day_of_week = ?");
-      ps.setInt(1, slotStart);
-      ps.setInt(2, slotEnd);
-      ps.setInt(3, doctorID);
-      ps.setInt(4, dayNum);
+      PreparedStatement ps;
+      if(slotStart < 48)
+      {
+         ps = conn.prepareStatement("UPDATE WorkDay SET start_timeslot = ?, end_timeslot = ? WHERE doctor_id = ? AND day_of_week = ?");
+         ps.setInt(1, slotStart);
+         ps.setInt(2, slotEnd);
+         ps.setInt(3, doctorID);
+         ps.setInt(4, dayNum);
+      }
+      else
+      {
+         ps = conn.prepareStatement("DELETE FROM WorkDay WHERE doctor_id = ? AND day_of_week = ?");
+         ps.setInt(1, doctorID);
+         ps.setInt(2, dayNum);
+      }
       int numRowsAffected = ps.executeUpdate();
       //each update really shouldn't affect more than one row, that'd be really weird
       if(numRowsAffected >= 1)
@@ -25,6 +35,25 @@ public class Schedule
       }
       else
       {
+        if(slotStart >= 0 && slotStart < 48)
+        {
+          ps = conn.prepareStatement("INSERT INTO WorkDay (start_timeslot, end_timeslot, doctor_id, day_of_week) "
+                                    +"VALUES (?, ?, ?, ?)");
+          ps.setInt(1, slotStart);
+          ps.setInt(2, slotEnd);
+          ps.setInt(3, doctorID);
+          ps.setInt(4, dayNum);
+          numRowsAffected = ps.executeUpdate();
+          //each insert really shouldn't affect more than one row, that'd be really weird
+          if(numRowsAffected >= 1)
+          {
+            return true;
+          }
+          else
+          {
+            return false;
+          }
+        }
         return false;
       }
     }

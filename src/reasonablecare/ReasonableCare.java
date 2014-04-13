@@ -102,140 +102,157 @@ public class ReasonableCare
                 break;
               case 2:
                 System.out.println("\n======== Make Appointment ========");
-                int doctorID = -1, reasonID = -1, beginTime = -1, endTime = -1;
-                Date dateOfApt = null;
-                //Deciding the doctor
-                System.out.print("First, do you have a doctor in mind?\n[0] Yes [1] No\n> ");
-                int choice = scan.nextInt();
-                if(choice == 0)
+                try
                 {
-                  System.out.print("What's the id of the doctor you had in mind?\n> ");
-                  doctorID = scan.nextInt();
-                  System.out.println("Ok, we'll use that doctor.");
-                }
-                else
-                {
-                  System.out.println("That's ok, we'll find you one based on your reason for visiting.");
-                }
-                System.out.println("What is the reason for your visit? Please choose from the following.");
-                List<Specialization> specials = Specialization.listSpecializations();
-                int i = 0;
-              for(Specialization special : specials)
-              {
-                System.out.printf("[%d] %s\n", i++, special.displayName);
-              }
-              System.out.print("> ");
-              reasonID = scan.nextInt();
-              Specialization special = specials.get(reasonID);
-              reasonID = special.id;
-              if(doctorID == -1)
-              {
-                List<User> doctors = Specialization.doctorsWithSpecialization(reasonID);
-                System.out.println("Here's doctors that can help you with that, please choose one to make an appointment with.");
-                i = 0;
-                for(User doctor : doctors)
-                {
-                  System.out.printf("[%d] %s\n", i++, doctor.name);
-                }
-                System.out.print("> ");
-                //unhandled exception: out of bounds
-                doctorID = doctors.get(scan.nextInt()).id;
-              }
-              boolean goodDay = false;
-              String tempDateString;
-              while(!goodDay)
-              {
-                System.out.print("What day would you like to make an appointment for? Please enter in yyyy-mm-dd format.\n> ");
-                tempDateString = scan.next();
-                dateOfApt = Date.valueOf(tempDateString);
-                List<Integer> schedule = Schedule.retrieveDoctorFreeSlots(dateOfApt, doctorID);
-                if(schedule.size() > 0)
-                {
-                  System.out.println("On that date, that doctor has the following open time slots.\nPlease choose a start and end time for your appointment.");
-                  i = 0;
-                  for(Integer timeslot : schedule)
+                  Connection conn = DBMinder.instance().getConnection();
+                  conn.setAutoCommit(false);
+                  int doctorID = -1, reasonID = -1, beginTime = -1, endTime = -1;
+                  Date dateOfApt = null;
+                  //Deciding the doctor
+                  System.out.print("First, do you have a doctor in mind?\n[0] Yes [1] No\n> ");
+                  int choice = scan.nextInt();
+                  if(choice == 0)
                   {
-                    System.out.printf("[%02d] %s\n", timeslot, formatTimeslot(timeslot));
+                    System.out.print("What's the id of the doctor you had in mind?\n> ");
+                    doctorID = scan.nextInt();
+                    System.out.println("Ok, we'll use that doctor.");
                   }
-                  boolean satisfactoryTimes = false;
-                  while(!satisfactoryTimes)
+                  else
                   {
-                    System.out.print("Start> ");
-                    beginTime = scan.nextInt();
-                    System.out.print("End> ");
-                    endTime = scan.nextInt();
-                    if(schedule.contains(beginTime) && schedule.contains(endTime))
+                    System.out.println("That's ok, we'll find you one based on your reason for visiting.");
+                  }
+                  System.out.println("What is the reason for your visit? Please choose from the following.");
+                  List<Specialization> specials = Specialization.listSpecializations();
+                  int i = 0;
+                  for(Specialization special : specials)
+                  {
+                    System.out.printf("[%d] %s\n", i++, special.displayName);
+                  }
+                  System.out.print("> ");
+                  reasonID = scan.nextInt();
+                  Specialization special = specials.get(reasonID);
+                  reasonID = special.id;
+                  if(doctorID == -1)
+                  {
+                    List<User> doctors = Specialization.doctorsWithSpecialization(reasonID);
+                    System.out.println("Here's doctors that can help you with that, please choose one to make an appointment with.");
+                    i = 0;
+                    for(User doctor : doctors)
                     {
-                      boolean goodRange = true;
-                      for(int timeTest = beginTime; timeTest < endTime && goodRange; timeTest++)
+                      System.out.printf("[%d] %s\n", i++, doctor.name);
+                    }
+                    System.out.print("> ");
+                    //unhandled exception: out of bounds
+                    doctorID = doctors.get(scan.nextInt()).id;
+                  }
+                  boolean goodDay = false;
+                  String tempDateString;
+                  while(!goodDay)
+                  {
+                    System.out.print("What day would you like to make an appointment for? Please enter in yyyy-mm-dd format.\n> ");
+                    tempDateString = scan.next();
+                    dateOfApt = Date.valueOf(tempDateString);
+                    List<Integer> schedule = Schedule.retrieveDoctorFreeSlots(dateOfApt, doctorID);
+                    if(schedule.size() > 0)
+                    {
+                      System.out.println("On that date, that doctor has the following open time slots.\nPlease choose a start and end time for your appointment.");
+                      i = 0;
+                      for(Integer timeslot : schedule)
                       {
-                        if(!schedule.contains(timeTest))
+                        System.out.printf("[%02d] %s\n", timeslot, formatTimeslot(timeslot));
+                      }
+                      boolean satisfactoryTimes = false;
+                      while(!satisfactoryTimes)
+                      {
+                        System.out.print("Start> ");
+                        beginTime = scan.nextInt();
+                        System.out.print("End> ");
+                        endTime = scan.nextInt();
+                        if(schedule.contains(beginTime) && schedule.contains(endTime))
                         {
-                          goodRange = false;
+                          boolean goodRange = true;
+                          for(int timeTest = beginTime; timeTest < endTime && goodRange; timeTest++)
+                          {
+                            if(!schedule.contains(timeTest))
+                            {
+                              goodRange = false;
+                            }
+                          }
+                          if(goodRange)
+                          {
+                            satisfactoryTimes = true;
+                            goodDay = true;
+                            System.out.printf("Ok, the appointment will be on %s from %s to %s.\n", dateOfApt, formatTimeslot(beginTime), formatTimeslot(endTime));
+                          }
+                          else
+                          {
+                            System.out.println("That is an invalid time range, please choose another range.");
+                          }
                         }
                       }
-                      if(goodRange)
-                      {
-                        satisfactoryTimes = true;
-                        goodDay = true;
-                        System.out.printf("Ok, the appointment will be on %s from %s to %s.\n", dateOfApt, formatTimeslot(beginTime), formatTimeslot(endTime));
-                      }
-                      else
-                      {
-                        System.out.println("That is an invalid time range, please choose another range.");
-                      }
+                    }
+                    else
+                    {
+                      System.out.println("No open time slots on that day, please choose another date.");
                     }
                   }
+                  Insurance studentsInsurance = Insurance.insuranceForStudent(user.id);
+                  long paidCopay = Insurance.copayLeftForStudent(user.id);
+                  long copayAmount = paidCopay < studentsInsurance.deductible?
+                    Math.round(Math.min(special.baseCost * studentsInsurance.copayPercent,
+                                        studentsInsurance.deductible - paidCopay))
+                    : 0;
+                  if(special.displayName.equals("Physical") && Insurance.studentHasFreePhysical(user.id))
+                  {
+                    copayAmount = 0;
+                  }
+                  long insuranceCost = paidCopay < studentsInsurance.deductible? special.baseCost - copayAmount: special.baseCost;
+                  System.out.printf("Your copayment for this visit will be $%d, please enter your credit card information."
+                                      +"\nYou will not be charged until we confirm the appointment.\n", copayAmount);
+                  boolean goodCard = false;
+                  String ccNum = "", ccExp = "";
+                  while(!goodCard)
+                  {
+                    System.out.print("Credit card number> ");
+                    ccNum = scan.next();
+                    System.out.print("Expiration date (mm/yy)> ");
+                    ccExp = scan.next();
+                    if(CreditCard.checkCardAmount(ccNum, ccExp, copayAmount))
+                    {
+                      System.out.println("You've been preapproved for the copay amount.");
+                      goodCard = true;
+                    }
+                    else
+                    {
+                      System.out.println("The credit card company for that card refused preapproval, please try again or try a different card.");
+                    }
+                  }
+                  System.out.print("Before we go ahead and make the appointment, you can describe the problem in more detail to the doctor\n> ");
+                  String studentNotes = scan.next();
+                  System.out.println("Ok! We've got all the information we need. Attempting to confirm your appointment now...");
+                  if(Appointment.makeAppointment(doctorID, user.id, dateOfApt, beginTime, endTime,
+                                                 insuranceCost, copayAmount, ccExp, ccNum,
+                                                 studentNotes, reasonID))
+                  {
+                    System.out.printf("You've successfully created the appointment! We will now charge your credit card."
+                                        +"\nYour appointment is on %s from %s to %s.\nNow logging you out.\n",
+                                      dateOfApt, formatTimeslot(beginTime), formatTimeslot(endTime));
+                    conn.commit();
+                    
+                  }
+                  else
+                  {
+                    System.out.println("We're sorry but we were unable to create your appointment."
+                                         +"\nPlease log in again and attempt to make another appointment.");
+                    conn.rollback();
+                  }
+                  conn.setAutoCommit(true);
                 }
-                else
+                catch(SQLException sqle)
                 {
-                  System.out.println("No open time slots on that day, please choose another date.");
+                  sqle.printStackTrace();
                 }
-              }
-              Insurance studentsInsurance = Insurance.insuranceForStudent(user.id);
-              long paidCopay = Insurance.copayLeftForStudent(user.id);
-              long copayAmount = paidCopay < studentsInsurance.deductible?
-                Math.round(Math.min(special.baseCost * studentsInsurance.copayPercent,
-                                    studentsInsurance.deductible - paidCopay))
-                : 0;
-              long insuranceCost = paidCopay < studentsInsurance.deductible? special.baseCost - copayAmount: special.baseCost;
-              System.out.printf("Your copayment for this visit will be $%d, please enter your credit card information."
-                                  +"\nYou will not be charged until we confirm the appointment.\n", copayAmount);
-              boolean goodCard = false;
-              String ccNum = "", ccExp = "";
-              while(!goodCard)
-              {
-                System.out.print("Credit card number> ");
-                ccNum = scan.next();
-                System.out.print("Expiration date (mm/yy)> ");
-                ccExp = scan.next();
-                if(CreditCard.checkCardAmount(ccNum, ccExp, copayAmount))
-                {
-                  System.out.println("You've been preapproved for the copay amount.");
-                  goodCard = true;
-                }
-                else
-                {
-                  System.out.println("The credit card company for that card refused preapproval, please try again or try a different card.");
-                }
-              }
-              System.out.print("Before we go ahead and make the appointment, you can describe the problem in more detail to the doctor\n> ");
-              String studentNotes = scan.next();
-              System.out.println("Ok! We've got all the information we need. Attempting to confirm your appointment now...");
-              if(Appointment.makeAppointment(reasonID, user.id, dateOfApt, beginTime, endTime,
-                                             insuranceCost, copayAmount, ccExp, ccNum,
-                                             studentNotes, reasonID))
-              {
-                System.out.printf("You've successfully created the appointment! We will now charge your credit card."
-                                    +"\nYour appointment is on %s from %s to %s.\nNow logging you out.\n",
-                                  dateOfApt, formatTimeslot(beginTime), formatTimeslot(endTime));
-              }
-              else
-              {
-                System.out.println("We're sorry but we were unable to create your appointment."
-                                     +"\nPlease log in again and attempt to make another appointment.");
-              }
-              break;
+                break;
               case 3:
                 System.out.println("\nHere are all your appointments:");
                 List<Appointment> appointments = Appointment.allAppointmentsForStudent(user.id);
@@ -249,7 +266,7 @@ public class ReasonableCare
                 if(pendingAppointments.size() > 0)
                 {
                   System.out.println("Here are all your pending appointments, choose one to cancel:");
-                  i = 0;
+                  int i = 0;
                   for(Appointment apt : pendingAppointments)
                   {
                     System.out.printf("[%d] %s\n", i++, apt);
@@ -308,11 +325,11 @@ public class ReasonableCare
                 System.out.println("Here are all the students with held accounts:");
                 List<StudentHeldRecord> records = User.heldList();
                 System.out.println("[sid] Name: HOLD/NOHOLD\n---------------------");
-                for(StudentHeldRecord record : records)
-                {
-                  System.out.println(record);
-                }
-                break;
+              for(StudentHeldRecord record : records)
+              {
+                System.out.println(record);
+              }
+              break;
             }
             //########################################################
             //####################### NURSE ##########################
@@ -322,7 +339,137 @@ public class ReasonableCare
             //########################################################
             //####################### DOCTOR #########################
             //########################################################
-            //
+            System.out.print("Here's the operations you can perform!\n"
+                               +"[0] Update user account\n"
+                               +"[1] Update schedule\n"
+                               +"[2] Area(s) of specialization\n"
+                               +"> ");
+            command = scan.nextInt();
+            switch(command)
+            {
+              case 0:
+                System.out.print("If you want to change your name, enter the new name below:\n> ");
+                String newName = scan.next();
+                System.out.print("If you want to change your password, enter the new password below:\n> ");
+                String newPass = scan.next();
+                System.out.print("If you want to change your phone number, enter the new number below:\n> ");
+                String newPhone = scan.next();
+                if(newName.length() > 0 || newPass.length() > 0)
+                {
+                  if(User.modifyUser(user.type, user.id, newName, newPass))
+                  {
+                    System.out.println("User modified successfully.");
+                  }
+                  else
+                  {
+                    System.out.println("User not modified.");
+                  }
+                }
+                if(newPhone.length() > 0)
+                {
+                  if(User.updateDoctor(user.id, newPhone))
+                  {
+                    System.out.println("Phone number updated successfully.");
+                  }
+                  else
+                  {
+                    System.out.println("Phone number not modified.");
+                  }
+                }
+                break;
+              case 1:
+                boolean done = false;
+                while(!done)
+                {
+                  System.out.println("What day of the week are you changing your schedule for?");
+                  System.out.print("[0] Sunday\n[1] Monday\n[2] Tuesday\n[3] Wednesday\n[4] Thursday\n[5] Friday\n[6] Saturday\n[7] Exit\n> ");
+                  int dayOfWeek = scan.nextInt();
+                  if(dayOfWeek > 6)
+                  {
+                    done = true;
+                  }
+                  else
+                  {
+                    for(int time = 0; time < 48; time++)
+                    {
+                      System.out.printf("[%02d] %s\n", time, formatTimeslot(time));
+                    }
+                    System.out.println("[48] Do not work this day");
+                    System.out.print("When do you start work on this day?\n> ");
+                    int startTime = scan.nextInt();
+                    if(startTime > 47)
+                    {
+                      if(Schedule.updateDoctorSchedule(user.id, dayOfWeek, 48, -1))
+                      {
+                        System.out.println("Schedule updated, you are no longer scheduled to work on that day.");
+                      }
+                      else
+                      {
+                        System.out.println("Schedule unable to be updated.");
+                      }
+                    }
+                    else
+                    {
+                      System.out.print("And when do you end?\n> ");
+                      int endTime = scan.nextInt();
+                      //we trust the user to put in sensical times, endTime must come after startTime
+                      if(Schedule.updateDoctorSchedule(user.id, dayOfWeek, startTime, endTime))
+                      {
+                        System.out.printf("Schedule updated, you are now scheduled to work from %s to %s on that day.\n", formatTimeslot(startTime), formatTimeslot(endTime));
+                      }
+                      else
+                      {
+                        System.out.println("Schedule unable to be updated.");
+                      }
+                    }
+                  }
+                }
+                break;
+              case 2:
+                List<Specialization> doctorSpecials = Specialization.listSpecializationsForDoctor(user.id);
+                int i = 0;
+                System.out.println("You have the following specializations recorded in the database.");
+                for(Specialization special : doctorSpecials)
+                {
+                  System.out.printf("[%d] %s\n", i++, special.displayName);
+                }
+                System.out.printf("[%d] Don't remove any\nWhich one do you want to remove?\n> ", i);
+                int toRemove = scan.nextInt();
+                if(toRemove >= i)
+                {
+                  //don't remove
+                  List<Specialization> specials = Specialization.listSpecializationsNotForDoctor(user.id);
+                  System.out.println("In that case, do you want to add any?");
+                  i = 0;
+                  for(Specialization special : specials)
+                  {
+                    System.out.printf("[%d] %s\n", i++, special.displayName);
+                  }
+                  System.out.printf("[%d] Don't add any\nWhich one do you want to add?\n> ", i);
+                  int toAdd = scan.nextInt();
+                  if(toAdd >=0 && toAdd < i && Specialization.setDoctorHasSpecialization(user.id, specials.get(toAdd).id, true))
+                  {
+                    System.out.println("Specialization added to your record.");
+                  }
+                  else
+                  {
+                    System.out.println("Specialization not added.");
+                  }
+                }
+                else
+                {
+                  //remove
+                  if(Specialization.setDoctorHasSpecialization(user.id, doctorSpecials.get(toRemove).id, false))
+                  {
+                    System.out.println("Specialization removed successfully.");
+                  }
+                  else
+                  {
+                    System.out.println("Unable to remove specialization.");
+                  }
+                }
+                break;
+            }
             //########################################################
             //####################### DOCTOR #########################
             //########################################################

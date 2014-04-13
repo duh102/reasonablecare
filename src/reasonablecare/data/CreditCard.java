@@ -8,6 +8,6 @@ public class CreditCard
    */
   public static boolean checkCardAmount(String ccnum, String ccexp, long amount)
   {
-    return Math.random() > 0.2;
+    return !ccnum.startsWith("1");
   }
 }

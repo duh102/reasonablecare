@@ -60,11 +60,13 @@ public class User
           toReturn = new User(rs.getInt(1),rs.getString(2),UserType.STUDENT);
         }
         conn.commit();
+        conn.setAutoCommit(true);
         return toReturn;
       }
       else
       {
-        conn.commit();
+        conn.rollback();
+        conn.setAutoCommit(true);
         return toReturn;
       }
     }

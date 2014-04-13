@@ -125,6 +125,66 @@ public class Specialization
     return null;
   }
   
+  /* returns a list of all specializations for a doctor
+   */
+  public static List<Specialization> listSpecializationsForDoctor(int doctorID)
+  {
+    DBMinder minder = DBMinder.instance();
+    ArrayList<Specialization> toReturn = new ArrayList<Specialization>();
+    Connection conn = minder.getConnection();
+    PreparedStatement ps;
+    ResultSet rs;
+    try
+    {
+      //retrieve the list of specializations
+      ps = conn.prepareStatement("SELECT id, display_name, cost FROM HasSpecialization, Specialization WHERE doctor_id = ? "
+                                +"AND HasSpecialization.specialization_id = Specialization.id ORDER BY id ASC");
+      ps.setInt(1, doctorID);
+      rs = ps.executeQuery();
+      while(rs.next())
+      {
+        toReturn.add(new Specialization(rs.getInt(1), rs.getString(2), rs.getLong(3)));
+      }
+      rs.close();
+      return toReturn;
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return null;
+  }
+  
+  /* returns a list of all specializations a doctor does not have
+   */
+  public static List<Specialization> listSpecializationsNotForDoctor(int doctorID)
+  {
+    DBMinder minder = DBMinder.instance();
+    ArrayList<Specialization> toReturn = new ArrayList<Specialization>();
+    Connection conn = minder.getConnection();
+    PreparedStatement ps;
+    ResultSet rs;
+    try
+    {
+      //retrieve the list of specializations
+      ps = conn.prepareStatement("SELECT id, display_name, cost FROM Specialization "
+                                +"WHERE id NOT IN (SELECT specialization_id FROM HasSpecialization WHERE doctor_id = ?) ORDER BY id ASC");
+      ps.setInt(1, doctorID);
+      rs = ps.executeQuery();
+      while(rs.next())
+      {
+        toReturn.add(new Specialization(rs.getInt(1), rs.getString(2), rs.getLong(3)));
+      }
+      rs.close();
+      return toReturn;
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return null;
+  }
+  
   /* returns a list of doctors with the given specialization ID
    */
   public static List<User> doctorsWithSpecialization(int specID)

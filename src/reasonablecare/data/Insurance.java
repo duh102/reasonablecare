@@ -20,6 +20,35 @@ public class Insurance
     this.copayPercent = copayPercent;
   }
   
+  public static boolean studentHasFreePhysical(int studentID)
+  {
+    DBMinder minder = DBMinder.instance();
+    Connection conn = minder.getConnection();
+    PreparedStatement ps;
+    ResultSet rs;
+    boolean toReturn = true;
+    try
+    {
+      //the mathematical expression that is subtracted from CURRENT_DATE is a semester in days, estimated
+      ps = conn.prepareStatement("SELECT apt_date FROM Appointment WHERE student_id = ? "
+                                +"AND to_char(apt_date, 'YYYY') = to_char(CURRENT_DATE, 'YYYY') "
+                                +"AND reason = (SELECT id FROM Specialization WHERE display_name = 'Physical')");
+      ps.setInt(1, studentID);
+      rs = ps.executeQuery();
+      while(rs.next())
+      {
+        toReturn = false;
+      }
+      rs.close();
+      return toReturn;
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return false;
+  }
+  
   public static boolean updateInsurance(int id, String newName, long newDeductible, double newCopay)
   {
     DBMinder minder = DBMinder.instance();
