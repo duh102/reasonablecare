@@ -2,6 +2,9 @@ package reasonablecare.data;
 
 import java.sql.*;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class User
 {
   public int id;
@@ -76,20 +79,20 @@ public class User
    * this is not very secure and I would never use this in production code but it works
    * for the project's requirements
    */
-  public static boolean logInUser(UserType type, int uid, String password)
+  public static User logInUser(UserType type, int uid, String password)
   {
     DBMinder minder = DBMinder.instance();
     Connection conn = minder.getConnection();
-    int returnedID = -1;
+    User returnedUser = null;
     try
     {
-      PreparedStatement ps = conn.prepareStatement("SELECT id FROM "+type.dbName+" WHERE id = ? AND login_info = ?");
+      PreparedStatement ps = conn.prepareStatement("SELECT id, name FROM "+type.dbName+" WHERE id = ? AND login_info = ?");
       ps.setInt(1, uid);
       ps.setString(2, password);
       ResultSet rs = ps.executeQuery();
       while(rs.next())
       {
-        returnedID = rs.getInt(1);
+        returnedUser = new User(rs.getInt(1), rs.getString(2), type);
       }
       rs.close();
     }
@@ -97,7 +100,7 @@ public class User
     {
       sqle.printStackTrace();
     }
-    return returnedID == uid;
+    return returnedUser;
   }
   
   /* returns the number of vaccines the student has received
@@ -162,6 +165,44 @@ public class User
       sqle.printStackTrace();
     }
     return false;
+  }
+  
+  /* returns a list of students
+   */
+  public static List<StudentHeldRecord> heldList()
+  {
+    DBMinder minder = DBMinder.instance();
+    List<StudentHeldRecord> toReturn = new ArrayList<StudentHeldRecord>();
+    Connection conn = minder.getConnection();
+    PreparedStatement ps;
+    ResultSet rs;
+    try
+    {
+      //the mathematical expression that is subtracted from CURRENT_DATE is a semester in days, estimated
+      ps = conn.prepareStatement("SELECT studentid, Students.name, COALESCE(vaccines, 0) as num_vaccines, semester FROM "
+                                   +"(SELECT Student.id AS sid, count(*) AS vaccines "
+                                   +"FROM Student, Appointment "
+                                   +"WHERE reason = (SELECT id FROM Specialization WHERE display_name = 'Vaccination') "
+                                   +"AND apt_date < CURRENT_DATE AND timestamp_canceled IS NULL AND Student.id = Appointment.student_id "
+                                   +"GROUP BY Student.id) aggregate "
+                                   +"FULL OUTER JOIN "
+                                   +"(select Student.id AS studentid, Student.name, "
+                                   +"(CASE WHEN (admit_date <= (CURRENT_DATE - (30*4.5))) THEN 1 ELSE 0 END) AS semester "
+                                   +"FROM Student) students "
+                                   +"ON aggregate.sid = students.studentid");
+      rs = ps.executeQuery();
+      while(rs.next())
+      {
+        toReturn.add(new StudentHeldRecord(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getInt(4) == 1? true : false));
+      }
+      rs.close();
+      return toReturn;
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return toReturn;
   }
   
   /* returns true if an update on a user processed successfully

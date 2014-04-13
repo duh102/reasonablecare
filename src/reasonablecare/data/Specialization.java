@@ -62,6 +62,41 @@ public class Specialization
     return false;
   }
   
+  public static boolean setDoctorHasSpecialization(int doctorID, int specializationID, boolean doesHave)
+  {
+    DBMinder minder = DBMinder.instance();
+    Connection conn = minder.getConnection();
+    PreparedStatement ps;
+    try
+    {
+      if(doesHave)
+      {
+        ps = conn.prepareStatement("INSERT INTO HasSpecialization (doctor_id, specialization_id) VALUES (?, ?)");
+      }
+      else
+      {
+        ps = conn.prepareStatement("DELETE FROM HasSpecialization WHERE doctor_id = ? AND specialization_id = ?");
+      }
+      ps.setInt(1, doctorID);
+      ps.setInt(2, specializationID);
+      int numRowsAffected = ps.executeUpdate();
+      //each update really shouldn't affect more than one row, that'd be really weird
+      if(numRowsAffected >= 1)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+    catch(SQLException sqle)
+    {
+      sqle.printStackTrace();
+    }
+    return false;
+  }
+  
   /* returns a list of all specializations in the database
    */
   public static List<Specialization> listSpecializations()

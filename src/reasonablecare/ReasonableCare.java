@@ -30,22 +30,23 @@ public class ReasonableCare
       int uid = scan.nextInt();
       System.out.print("\nPassword:\n> ");
       String pass = scan.next();
+      User user = null;
       
       switch(type)
       {
         case 0:
           System.out.printf("\nYou're attempting to log in as a %s with UID [%d] and password '%s'\n", User.UserType.STUDENT.dbName, uid, pass);
-          loggedIn = User.logInUser(User.UserType.STUDENT, uid, pass);
+          loggedIn = (user = User.logInUser(User.UserType.STUDENT, uid, pass)) != null;
           userType = User.UserType.STUDENT;
           break;
         case 1:
           System.out.printf("\nYou're attempting to log in as a nurse with UID [%d] and password '%s'\n", uid, pass);
-          loggedIn = User.logInUser(User.UserType.NURSE, uid, pass);
+          loggedIn = (user = User.logInUser(User.UserType.NURSE, uid, pass)) != null;
           userType = User.UserType.NURSE;
           break;
         case 2:
           System.out.printf("\nYou're attempting to log in as a doctor with UID [%d] and password '%s'\n", uid, pass);
-          loggedIn = User.logInUser(User.UserType.DOCTOR, uid, pass);
+          loggedIn = (user = User.logInUser(User.UserType.DOCTOR, uid, pass)) != null;
           userType = User.UserType.DOCTOR;
           break;
         default:
@@ -58,6 +59,9 @@ public class ReasonableCare
         switch(userType)
         {
           case STUDENT:
+            //########################################################
+            //###################### STUDENT #########################
+            //########################################################
             System.out.print("Here's the operations you can perform!\n"
                                +"[0] Update user account\n"
                                +"[1] Check if your account is held\n"
@@ -69,11 +73,22 @@ public class ReasonableCare
             switch(command)
             {
               case 0:
-                System.out.println("\nUnimplemented");
+                System.out.print("If you want to change your name, enter the new name below:\n> ");
+                String newName = scan.next();
+                System.out.print("If you want to change your password, enter the new password below:\n> ");
+                String newPass = scan.next();
+                if(User.modifyUser(user.type, user.id, newName, newPass))
+                {
+                  System.out.println("User modified successfully.");
+                }
+                else
+                {
+                  System.out.println("User not modified.");
+                }
                 break;
               case 1:
-                boolean isHeld = User.isStudentHeld(uid);
-                int numberVaccinations = User.getVaccinesForStudent(uid);
+                boolean isHeld = User.isStudentHeld(user.id);
+                int numberVaccinations = User.getVaccinesForStudent(user.id);
                 if(isHeld)
                 {
                   System.out.printf("Your account has been held, you have %d of 3 required vaccinations."
@@ -177,8 +192,8 @@ public class ReasonableCare
                   System.out.println("No open time slots on that day, please choose another date.");
                 }
               }
-              Insurance studentsInsurance = Insurance.insuranceForStudent(uid);
-              long paidCopay = Insurance.copayLeftForStudent(uid);
+              Insurance studentsInsurance = Insurance.insuranceForStudent(user.id);
+              long paidCopay = Insurance.copayLeftForStudent(user.id);
               long copayAmount = paidCopay < studentsInsurance.deductible?
                 Math.round(Math.min(special.baseCost * studentsInsurance.copayPercent,
                                     studentsInsurance.deductible - paidCopay))
@@ -207,7 +222,7 @@ public class ReasonableCare
               System.out.print("Before we go ahead and make the appointment, you can describe the problem in more detail to the doctor\n> ");
               String studentNotes = scan.next();
               System.out.println("Ok! We've got all the information we need. Attempting to confirm your appointment now...");
-              if(Appointment.makeAppointment(reasonID, uid, dateOfApt, beginTime, endTime,
+              if(Appointment.makeAppointment(reasonID, user.id, dateOfApt, beginTime, endTime,
                                              insuranceCost, copayAmount, ccExp, ccNum,
                                              studentNotes, reasonID))
               {
@@ -223,14 +238,14 @@ public class ReasonableCare
               break;
               case 3:
                 System.out.println("\nHere are all your appointments:");
-                List<Appointment> appointments = Appointment.allAppointmentsForStudent(uid);
+                List<Appointment> appointments = Appointment.allAppointmentsForStudent(user.id);
               for(Appointment apt : appointments)
               {
                 System.out.println(apt);
               }
               break;
               case 4:
-                List<Appointment> pendingAppointments = Appointment.allPendingAppointmentsForStudent(uid);
+                List<Appointment> pendingAppointments = Appointment.allPendingAppointmentsForStudent(user.id);
                 if(pendingAppointments.size() > 0)
                 {
                   System.out.println("Here are all your pending appointments, choose one to cancel:");
@@ -260,12 +275,57 @@ public class ReasonableCare
                 System.out.println("\nNot a valid command, logging out");
                 break;
             }
+            //########################################################
+            //###################### STUDENT #########################
+            //########################################################
             break;
           case NURSE:
-            System.out.println("\nUnimplemented");
+            //########################################################
+            //####################### NURSE ##########################
+            //########################################################
+            System.out.print("Here's the operations you can perform!\n"
+                               +"[0] Update user account\n"
+                               +"[1] Check held Student accounts\n"
+                               +"> ");
+            command = scan.nextInt();
+            switch(command)
+            {
+              case 0:
+                System.out.print("If you want to change your name, enter the new name below:\n> ");
+                String newName = scan.next();
+                System.out.print("If you want to change your password, enter the new password below:\n> ");
+                String newPass = scan.next();
+                if(User.modifyUser(user.type, user.id, newName, newPass))
+                {
+                  System.out.println("User modified successfully.");
+                }
+                else
+                {
+                  System.out.println("User not modified.");
+                }
+                break;
+              case 1:
+                System.out.println("Here are all the students with held accounts:");
+                List<StudentHeldRecord> records = User.heldList();
+                System.out.println("[sid] Name: HOLD/NOHOLD\n---------------------");
+                for(StudentHeldRecord record : records)
+                {
+                  System.out.println(record);
+                }
+                break;
+            }
+            //########################################################
+            //####################### NURSE ##########################
+            //########################################################
             break;
           case DOCTOR:
-            System.out.println("\nUnimplemented");
+            //########################################################
+            //####################### DOCTOR #########################
+            //########################################################
+            //
+            //########################################################
+            //####################### DOCTOR #########################
+            //########################################################
             break;
         }
       }
