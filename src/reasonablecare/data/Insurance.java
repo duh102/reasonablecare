@@ -20,6 +20,8 @@ public class Insurance
     this.copayPercent = copayPercent;
   }
   
+  /* returns true if the student hasn't used their free physical for the year
+   */
   public static boolean studentHasFreePhysical(int studentID)
   {
     DBMinder minder = DBMinder.instance();
@@ -49,6 +51,8 @@ public class Insurance
     return false;
   }
   
+  /* returns true if the update was successful
+   */
   public static boolean updateInsurance(int id, String newName, long newDeductible, double newCopay)
   {
     DBMinder minder = DBMinder.instance();
@@ -100,6 +104,8 @@ public class Insurance
     return false;
   }
   
+  /* returns the insurance that a student has
+   */
   public static Insurance insuranceForStudent(int studentID)
   {
     DBMinder minder = DBMinder.instance();
@@ -128,6 +134,8 @@ public class Insurance
     return toReturn;
   }
   
+  /* returns a list of all insurances in the database
+   */
   public static List<Insurance> insurances()
   {
     DBMinder minder = DBMinder.instance();
@@ -153,6 +161,8 @@ public class Insurance
     return toReturn;
   }
   
+  /* returns how much the student still has before they've paid off their copay
+   */
   public static long copayLeftForStudent(int studentID)
   {
     DBMinder minder = DBMinder.instance();

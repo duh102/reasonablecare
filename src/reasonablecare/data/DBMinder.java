@@ -17,6 +17,9 @@ public class DBMinder
     getConnection();
   }
   
+  /* returns the single instance of DBMinder
+   * if it does not exist, it's created before returning
+   */
   public static DBMinder instance()
   {
     if(minderSingleton == null)

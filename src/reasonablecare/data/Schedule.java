@@ -6,6 +6,8 @@ import java.sql.*;
 
 public class Schedule
 {
+  /* returns true if the update was successful
+   */
   public static boolean updateDoctorSchedule(int doctorID, int dayNum, int slotStart, int slotEnd)
   {
     DBMinder minder = DBMinder.instance();

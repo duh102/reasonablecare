@@ -10,6 +10,10 @@ import reasonablecare.data.*;
 
 public class ReasonableCare
 {
+  /* This large function is the user interface for the application
+   * some commands are looped until the user wishes to exit, most are
+   * single loop through, have to reconnect to do more
+   */
   public static void main(String args[])
   {
     Scanner scan = new Scanner(System.in).useLocale(Locale.US);;

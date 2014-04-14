@@ -34,6 +34,11 @@ public class User
     this.type = newType;
   }
   
+  /* returns the user object after registering a student
+   * we utilize a transaction to make sure that the selected student at the end
+   * is the same as the inserted student at the beginning; no other transaction will interfere
+   * with the read of the new student
+   */
   public static User registerStudent(String name, String password, Date admitDate, int insuranceID)
   {
     DBMinder minder = DBMinder.instance();
@@ -253,6 +258,8 @@ public class User
     return false;
   }
   
+  /* returns true if the doctor's phone number was successfully updated
+   */
   public static boolean updateDoctor(int doctorID, String phoneNum)
   {
     DBMinder minder = DBMinder.instance();
