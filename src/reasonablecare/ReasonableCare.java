@@ -1,6 +1,8 @@
 package reasonablecare;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 import java.util.Scanner;
 import java.sql.*;
 
@@ -10,8 +12,8 @@ public class ReasonableCare
 {
   public static void main(String args[])
   {
-    Scanner scan = new Scanner(System.in);
-    scan.useDelimiter("\\n");
+    Scanner scan = new Scanner(System.in).useLocale(Locale.US);;
+    scan.useDelimiter(Pattern.compile("[\\r\\n;]+"));
     
     boolean loggedIn = false;
     User.UserType userType = User.UserType.UNKNOWN;
